@@ -1,0 +1,3 @@
+# startlake
+
+a simple startpage.

@@ -1,14 +1,55 @@
 import { weatherCodes } from './weatherCodes.js'
 
-const lat = process.env.LATITUDE
-const lon = process.env.LONGITUDE
+document.addEventListener('DOMContentLoaded', () => {
+	const settingsForm = document.getElementById('settings-form')
+	const toggleSettingsButton = document.getElementById('toggle-settings')
 
-const twelveHour = true
+	const settings = JSON.parse(localStorage.getItem('settings'))
 
-const units = 'fahrenheit'
-const timezone = 'America%2FLos_Angeles'
+	if (!settings) {
+		settingsForm.style.display = 'block'
+	} else {
+		settingsForm.style.display = 'none'
+		toggleSettingsButton.style.display = 'block'
+	}
 
-const apiURL = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&temperature_unit=${units}&timezone=${timezone}`
+	toggleSettingsButton.addEventListener('click', () => {
+		if (settingsForm.style.display === 'none') {
+			settingsForm.style.display = 'block'
+		} else {
+			settingsForm.style.display = 'none'
+		}
+	})
+})
+
+document.getElementById('settings-form').addEventListener('submit', (event) => {
+	event.preventDefault()
+	lat = document.getElementById('latitude').value
+	lon = document.getElementById('longitude').value
+	units = document.getElementById('units').value
+	const timeFormat = document.getElementById('time-format').value
+	twelveHour = timeFormat === '12'
+
+	localStorage.setItem(
+		'settings',
+		JSON.stringify({ lat, lon, units, timeFormat })
+	)
+	document.getElementById('settings-form').style.display = 'none'
+	document.getElementById('toggle-settings').style.display = 'block'
+	localStorage.removeItem('weatherData')
+})
+
+const settings = JSON.parse(localStorage.getItem('settings')) || {
+	lat: '0',
+	lon: '0',
+	units: 'fahrenheit',
+	timeFormat: '12',
+}
+
+let lat = settings.lat
+let lon = settings.lon
+let units = settings.units
+let twelveHour = settings.timeFormat === '12'
 
 let prevSec = -1
 let isFetching = false
@@ -63,10 +104,12 @@ function checkWeather(now) {
 }
 
 async function fetchAPI() {
-	console.log('fetching weather API')
+	console.log(lat, lon, units)
 	try {
 		isFetching = true
-		const response = await fetch(apiURL)
+		const response = await fetch(
+			`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&temperature_unit=${units}`
+		)
 		const data = await response.json()
 		console.log('successful fetch', data)
 		localStorage.setItem('weatherData', JSON.stringify(data))
