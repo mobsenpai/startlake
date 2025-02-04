@@ -1,13 +1,13 @@
 {
-	"name": "lake",
-	"version": "0.1",
+	"name": "startlake",
+	"version": "1.0",
 	"manifest_version": 2,
 	"chrome_url_overrides": {
 		"newtab": "index.html"
 	},
 	"browser_specific_settings": {
 		"gecko": {
-			"id": "lake@refact0r.dev"
+			"id": "startlake@refact0r.dev"
 		}
 	}
 }
